@@ -45,5 +45,5 @@ def process_file(filepath):
 
     print(f"Updated {filepath} successfully.")
 
-process_file('d:/Verno/src/ui/templates/conversationTemplate.ts')
-process_file('d:/Verno/src/panels/SDLCWebviewPanel.ts')
+process_file('d:/Angel/src/ui/templates/conversationTemplate.ts')
+process_file('d:/Angel/src/panels/SDLCWebviewPanel.ts')

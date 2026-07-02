@@ -1,4 +1,4 @@
-﻿node : node:internal/modules/cjs/loader:1147
+node : node:internal/modules/cjs/loader:1147
 At line:1 char:1
 + node .\node_modules\typescript\bin\tsc -p ./ 2>&1 
 | Out-File -Encodin ...
@@ -12,7 +12,7 @@ At line:1 char:1
   ^
 
 Error: Cannot find module 
-'D:\Verno\node_modules\typescript\bin\tsc'
+'D:\Angel\node_modules\typescript\bin\tsc'
     at Module._resolveFilename 
 (node:internal/modules/cjs/loader:1144:15)
     at Module._load 
