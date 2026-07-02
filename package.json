@@ -1,0 +1,267 @@
+{
+  "name": "angel",
+  "displayName": "Angel — AI SDLC Automation Engine",
+  "description": "Voice-first multi-agent AI assistant that automates the full Software Development Life Cycle inside VS Code.",
+  "version": "1.0.0",
+  "publisher": "MuhammadAbuzar-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maybeanns/Angel"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "icon": "media/logo.png",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:angel.processInput",
+    "onCommand:angel.startRecording",
+    "onCommand:angel.startSDLC",
+    "onCommand:angel.toggleMode",
+    "onView:angel.agentPanel",
+    "onView:angel-enhanced-sidebar",
+    "onView:angel-coverage-sidebar"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "angel.processInput",
+        "title": "Angel: Process User Input"
+      },
+      {
+        "command": "angel.startRecording",
+        "title": "Angel: Start Recording"
+      },
+      {
+        "command": "angel.stopRecording",
+        "title": "Angel: Stop Recording"
+      },
+      {
+        "command": "angel.manageAgents",
+        "title": "Angel: Manage Agents"
+      },
+      {
+        "command": "angel.generateCode",
+        "title": "Angel: Generate Code"
+      },
+      {
+        "command": "angel.showDiff",
+        "title": "Angel: Show Diff"
+      },
+      {
+        "command": "angel.showOutput",
+        "title": "Angel: Show Angel Output"
+      },
+      {
+        "command": "angel.revealSidebar",
+        "title": "Angel: Reveal Sidebar"
+      },
+      {
+        "command": "angel.newConversation",
+        "title": "Angel: New Conversation"
+      },
+      {
+        "command": "angel.processVoiceInput",
+        "title": "Angel: Process Voice Input"
+      },
+      {
+        "command": "angel.clearApiKeys",
+        "title": "Angel: Clear Stored API Keys"
+      },
+      {
+        "command": "angel.startSDLC",
+        "title": "Angel: Start SDLC Pipeline"
+      },
+      {
+        "command": "angel.generateObservability",
+        "title": "Angel: Generate Observability Artifacts"
+      },
+      {
+        "command": "angel.generateOwaspChecklist",
+        "title": "Angel: Generate OWASP Checklist"
+      },
+      {
+        "command": "angel.checkCompliance",
+        "title": "Angel: Check PRD Compliance (GDPR/HIPAA)"
+      },
+      {
+        "command": "angel.scanForSecrets",
+        "title": "Angel: Scan for Secrets"
+      },
+      {
+        "command": "angel.installSecretScanner",
+        "title": "Angel: Install Pre-Commit Secret Scanner"
+      },
+      {
+        "command": "angel.uninstallSecretScanner",
+        "title": "Angel: Uninstall Secret Scanner Hook"
+      },
+      {
+        "command": "angel.generateJsDocs",
+        "title": "Angel: Generate JSDoc (BMAD Agents)"
+      },
+      {
+        "command": "angel.generateJsDocsFile",
+        "title": "Angel: Generate JSDoc for Current File"
+      },
+      {
+        "command": "angel.generateChangelog",
+        "title": "Angel: Generate Changelog from Git History"
+      },
+      {
+        "command": "angel.toggleMode",
+        "title": "Angel: Toggle Chat / SDLC Mode"
+      },
+      {
+        "command": "angel.setupJira",
+        "title": "Angel: Setup Jira Integration"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "angel.processInput",
+        "key": "ctrl+shift+;",
+        "mac": "cmd+shift+;"
+      },
+      {
+        "command": "angel.startRecording",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r"
+      },
+      {
+        "command": "angel.startSDLC",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l"
+      },
+      {
+        "command": "angel.toggleMode",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "angel",
+          "title": "Angel",
+          "icon": "media/angel-icon.svg",
+          "type": "webview"
+        }
+      ]
+    },
+    "views": {
+      "angel": [
+        {
+          "id": "angel.agentPanel",
+          "name": "Agent Panel",
+          "type": "webview"
+        },
+        {
+          "id": "angel-enhanced-sidebar",
+          "name": "Angel Dashboard",
+          "type": "webview"
+        },
+        {
+          "id": "angel-coverage-sidebar",
+          "name": "Angel Coverage",
+          "type": "webview"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "angel.agentPanel",
+        "contents": "Click the button to activate Angel and load the Agent Panel.\n[Activate Angel](command:angel.processInput)"
+      }
+    ],
+    "configuration": {
+      "title": "Angel",
+      "properties": {
+        "angel.defaultProvider": {
+          "type": "string",
+          "default": "groq",
+          "enum": [
+            "gemini",
+            "groq",
+            "anthropic",
+            "openai"
+          ],
+          "description": "Default AI provider. API keys are stored securely via Angel: Clear Stored API Keys."
+        },
+        "angel.ttsEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Angel to speak responses out loud"
+        },
+        "angel.ttsVoice": {
+          "type": "string",
+          "default": "af_heart",
+          "description": "Select the Kokoro voice model (e.g., af_heart, af_nicole, af_sky)."
+        },
+        "angel.ttsSpeed": {
+          "type": "number",
+          "default": 1.1,
+          "description": "Playback speed multiplier for the TTS voice."
+        },
+        "angel.whisperMode": {
+          "type": "string",
+          "default": "hybrid",
+          "enum": [
+            "hybrid",
+            "local-only",
+            "cloud-only"
+          ],
+          "description": "hybrid = auto-route for speed | local-only = enterprise privacy | cloud-only = max accuracy"
+        },
+        "angel.localWhisperModel": {
+          "type": "string",
+          "default": "base",
+          "enum": [
+            "tiny",
+            "base",
+            "small",
+            "medium",
+            "large-v3"
+          ],
+          "description": "Local Whisper model size. large-v3 = most accurate, base = fastest"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.0.0",
+    "@types/sinon": "^21.0.1",
+    "@types/vscode": "^1.80.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.2",
+    "sinon": "^21.1.2",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.54.0",
+    "vscode": "^1.1.37"
+  },
+  "dependencies": {
+    "@mermaid-js/mermaid-cli": "^11.12.0",
+    "@ricky0123/vad-web": "^0.0.30",
+    "@xenova/transformers": "^2.17.2",
+    "dotenv": "^17.4.2",
+    "form-data": "^4.0.5",
+    "groq-sdk": "^0.37.0",
+    "node-pty": "^1.1.0",
+    "onnxruntime-web": "^1.24.3",
+    "tree-sitter-wasms": "^0.1.13",
+    "web-tree-sitter": "^0.26.6"
+  }
+}
