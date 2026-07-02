@@ -63,26 +63,17 @@ export class WelcomePanel {
   <title>Welcome to Angel</title>
   <style>
     :root {
-      --background: oklch(0.2046 0 0);
-      --foreground: oklch(0.9219 0 0);
-      --card: oklch(0.2686 0 0);
-      --card-foreground: oklch(0.9219 0 0);
-      --primary: oklch(0.7686 0.1647 70.0804);
-      --primary-foreground: oklch(0 0 0);
-      --secondary: oklch(0.2686 0 0);
-      --secondary-foreground: oklch(0.9219 0 0);
-      --muted: oklch(0.2393 0 0);
-      --muted-foreground: oklch(0.7155 0 0);
-      --accent: oklch(0.4732 0.1247 46.2007);
-      --accent-foreground: oklch(0.9243 0.1151 95.7459);
-      --border: oklch(0.3715 0 0);
-      --glass: rgba(255, 255, 255, 0.03);
+      --background: var(--vscode-editor-background, #1e1e1e);
+      --foreground: var(--vscode-editor-foreground, #cccccc);
+      --card: var(--vscode-editorWidget-background, #252526);
+      --border: var(--vscode-widget-border, #454545);
+      --gradient-brand: linear-gradient(135deg, #00E5FF, #2979FF, #AA00FF);
     }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: var(--vscode-font-family, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
       background: var(--background);
       color: var(--foreground);
       padding: 60px 40px;
@@ -91,38 +82,26 @@ export class WelcomePanel {
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
     .hero {
       text-align: center;
       margin-bottom: 64px;
-      animation: spatialFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    @keyframes spatialFadeIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
     .hero h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
+      font-size: 2.5rem;
+      font-weight: 600;
       margin-bottom: 16px;
       color: var(--foreground);
-      background: linear-gradient(to bottom, var(--foreground), var(--muted-foreground));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
     
     .hero p {
-      color: var(--muted-foreground);
-      font-size: 1.2rem;
+      color: var(--vscode-descriptionForeground, #999999);
+      font-size: 1.1rem;
       max-width: 600px;
       margin: 0 auto;
-      font-weight: 500;
     }
 
     .modes {
@@ -137,51 +116,26 @@ export class WelcomePanel {
     .mode-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
+      border-radius: 6px;
+      padding: 24px;
     }
     
-    .mode-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      border-color: var(--primary);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    
-    .mode-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at top left, hsla(var(--primary), 0.1), transparent 70%);
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-    
-    .mode-card:hover::before { opacity: 1; }
-
     .mode-card .icon { 
-      font-size: 2.5rem; 
-      margin-bottom: 20px; 
+      font-size: 2rem; 
+      margin-bottom: 16px; 
       display: inline-block;
-      filter: drop-shadow(0 0 10px var(--primary));
     }
     
     .mode-card h3 { 
-      color: var(--primary); 
+      color: var(--foreground);
       margin-bottom: 12px; 
-      font-size: 1.4rem; 
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 1.2rem; 
+      font-weight: 600;
     }
     
     .mode-card p { 
-      color: var(--muted-foreground); 
-      font-size: 1rem; 
-      line-height: 1.5;
+      color: var(--vscode-descriptionForeground, #999999); 
+      font-size: 0.95rem; 
     }
 
     .shortcuts {
@@ -190,25 +144,22 @@ export class WelcomePanel {
       margin-bottom: 56px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-radius: 6px;
+      padding: 24px;
     }
     
     .shortcuts h3 { 
-      color: var(--primary); 
-      margin-bottom: 24px; 
-      font-size: 1.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 800;
+      color: var(--foreground);
+      margin-bottom: 20px; 
+      font-size: 1rem;
+      font-weight: 600;
     }
     
     .shortcut-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 0;
+      padding: 12px 0;
       border-bottom: 1px solid var(--border);
     }
     
@@ -216,26 +167,23 @@ export class WelcomePanel {
     
     .shortcut-row span { 
       color: var(--foreground); 
-      font-size: 1rem; 
-      font-weight: 600;
+      font-size: 0.95rem; 
     }
     
     kbd {
-      background: var(--muted);
+      background: var(--vscode-editor-background, #1e1e1e);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-family: 'SF Mono', Consolas, monospace;
-      font-size: 0.9rem;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-family: var(--vscode-editor-font-family, 'SF Mono', Consolas, monospace);
+      font-size: 0.85rem;
       color: var(--foreground);
-      box-shadow: 0 2px 0 var(--background);
-      margin: 0 2px;
     }
 
     .actions {
       text-align: center;
       display: flex;
-      gap: 24px;
+      gap: 16px;
       justify-content: center;
       width: 100%;
     }
@@ -244,44 +192,37 @@ export class WelcomePanel {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 16px 40px;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
+      padding: 10px 24px;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
       border: none;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      letter-spacing: -0.01em;
+      font-family: inherit;
     }
     
     .btn-primary {
-      background: var(--primary);
-      color: var(--primary-foreground);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+      background: var(--gradient-brand);
+      color: #ffffff;
     }
     
     .btn-primary:hover {
-      transform: translateY(-4px);
-      filter: brightness(1.1);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      opacity: 0.9;
     }
     
     .btn-secondary {
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      color: var(--foreground);
+      background: var(--vscode-button-secondaryBackground, #3a3d41);
+      color: var(--vscode-button-secondaryForeground, #ffffff);
     }
     
     .btn-secondary:hover {
-      background: var(--muted);
-      border-color: var(--primary);
-      transform: translateY(-4px);
+      background: var(--vscode-button-secondaryHoverBackground, #45494e);
     }
   </style>
 </head>
 <body>
   <div class="hero">
-    <h1>🚀 Welcome to Angel</h1>
+    <h1>Welcome to Angel</h1>
     <p>The high-performance SDLC automation engine. Multi-agent debate, spatial design, and zero-to-deployed velocity.</p>
   </div>
 
@@ -299,7 +240,7 @@ export class WelcomePanel {
   </div>
 
   <div class="shortcuts">
-    <h3>⌨️ COMMAND TERMINALS</h3>
+    <h3>Command Terminals</h3>
     <div class="shortcut-row">
       <span>Open Angel Input</span>
       <div><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>;</kbd></div>
@@ -315,8 +256,8 @@ export class WelcomePanel {
   </div>
 
   <div class="actions">
-    <button class="btn btn-secondary" onclick="postMsg('setApiKey')">🔑 CONFIGURE API</button>
-    <button class="btn btn-primary" onclick="postMsg('dismiss')">✨ INITIALIZE V1.0</button>
+    <button class="btn btn-secondary" onclick="postMsg('setApiKey')">Configure API</button>
+    <button class="btn btn-primary" onclick="postMsg('dismiss')">Initialize v1.0</button>
   </div>
 
   <script>
