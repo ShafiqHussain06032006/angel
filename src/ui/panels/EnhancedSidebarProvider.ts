@@ -159,23 +159,24 @@ export class EnhancedSidebarProvider implements vscode.WebviewViewProvider {
              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
             <style>
                 :root {
-                    --background: oklch(0.2046 0 0);
-                    --foreground: oklch(0.9219 0 0);
-                    --card: oklch(0.2686 0 0);
-                    --card-foreground: oklch(0.9219 0 0);
-                    --popover: oklch(0.2686 0 0);
-                    --popover-foreground: oklch(0.9219 0 0);
-                    --primary: oklch(0.7686 0.1647 70.0804);
-                    --primary-foreground: oklch(0 0 0);
-                    --secondary: oklch(0.2686 0 0);
-                    --secondary-foreground: oklch(0.9219 0 0);
-                    --muted: oklch(0.2393 0 0);
-                    --muted-foreground: oklch(0.7155 0 0);
-                    --accent: oklch(0.4732 0.1247 46.2007);
-                    --accent-foreground: oklch(0.9243 0.1151 95.7459);
-                    --destructive: oklch(0.6368 0.2078 25.3313);
-                    --destructive-foreground: oklch(1.0000 0 0);
-                    --border: oklch(0.3715 0 0);
+                    --background: var(--vscode-editor-background, #1e1e1e);
+                    --foreground: var(--vscode-editor-foreground, #cccccc);
+                    --card: var(--vscode-editorWidget-background, #252526);
+                    --card-foreground: var(--vscode-editorWidget-foreground, #cccccc);
+                    --popover: var(--vscode-editorWidget-background, #252526);
+                    --popover-foreground: var(--vscode-editorWidget-foreground, #cccccc);
+                    --primary: #00d4ff;
+                    --primary-foreground: #ffffff;
+                    --secondary: var(--vscode-button-secondaryBackground, #3a3d41);
+                    --secondary-foreground: var(--vscode-button-secondaryForeground, #ffffff);
+                    --muted: var(--vscode-textBlockQuote-background, #333333);
+                    --muted-foreground: var(--vscode-descriptionForeground, #999999);
+                    --accent: #a855f7;
+                    --accent-foreground: #ffffff;
+                    --destructive: var(--vscode-errorForeground, #f14c4c);
+                    --destructive-foreground: #ffffff;
+                    --border: var(--vscode-widget-border, #454545);
+                    --gradient-brand: linear-gradient(135deg, #00d4ff, #2979ff, #a855f7);
                     
                     --container-paddding: 20px;
                     --input-padding-vertical: 6px;
@@ -199,7 +200,6 @@ export class EnhancedSidebarProvider implements vscode.WebviewViewProvider {
                     position: sticky;
                     top: 0;
                     z-index: 10;
-                    backdrop-filter: blur(12px);
                 }
                 .tab {
                     padding: 12px 16px;
@@ -216,7 +216,6 @@ export class EnhancedSidebarProvider implements vscode.WebviewViewProvider {
                 .tab.active {
                     opacity: 1;
                     border-bottom-color: var(--primary);
-                    background: linear-gradient(to top, rgba(118, 134, 182, 0.1), transparent);
                     color: var(--primary);
                 }
                 .content { padding: 20px; display: none; height: calc(100vh - 45px); overflow-y: auto; }
@@ -231,15 +230,14 @@ export class EnhancedSidebarProvider implements vscode.WebviewViewProvider {
                 .card {
                     background: var(--card);
                     border: 1px solid var(--border);
-                    border-radius: 8px;
+                    border-radius: 4px;
                     padding: 16px;
                     margin-bottom: 16px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
-                    transition: transform 0.2s, box-shadow 0.2s;
+                    transition: transform 0.2s, border-color 0.2s;
                 }
                 .card:hover {
-                    box-shadow: 0 6px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
-                    transform: translateY(-2px);
+                    border-color: var(--primary);
+                    transform: translateY(-1px);
                 }
                 .card-header {
                     display: flex;
@@ -273,12 +271,12 @@ export class EnhancedSidebarProvider implements vscode.WebviewViewProvider {
                     align-items: center;
                 }
                 .mode-tag {
-                    background: var(--primary);
-                    color: var(--primary-foreground);
+                    background: var(--gradient-brand);
+                    color: #ffffff;
                     padding: 3px 8px;
-                    border-radius: 12px;
+                    border-radius: 4px;
                     font-size: 10px;
-                    font-weight: 700;
+                    font-weight: 600;
                     text-transform: uppercase;
                 }
                 .delete-btn {
