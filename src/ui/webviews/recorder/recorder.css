@@ -1,0 +1,121 @@
+/* Voice Recorder Styles */
+
+:root {
+  --primary-color: var(--vscode-button-background);
+  --danger-color: var(--vscode-button-secondaryBackground);
+  --success-color: var(--vscode-notificationCenterHeader-background);
+  --background: var(--vscode-sideBar-background);
+  --border-color: var(--vscode-sideBar-border);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--vscode-font-family);
+  background-color: var(--background);
+  padding: 8px;
+  color: var(--vscode-foreground);
+  margin: 0;
+}
+
+.recorder-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+h2 {
+  display: none;
+}
+
+.recorder-status {
+  margin: 0;
+  padding: 6px 8px;
+  background-color: var(--vscode-input-background);
+  border-radius: 2px;
+  text-align: center;
+  font-size: 11px;
+}
+
+#status {
+  font-weight: 500;
+  color: var(--vscode-foreground);
+}
+
+.recorder-controls {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.btn {
+  flex: 1;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.btn-danger {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.recordings-list {
+  margin-top: 0;
+}
+
+.recording-item {
+  background: var(--vscode-input-background);
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  padding: 6px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recording-item audio {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.recording-item button {
+  padding: 4px 8px;
+  background-color: var(--vscode-notificationCenterHeader-background);
+  color: var(--vscode-notificationCenterHeader-foreground);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.recording-item button:hover {
+  background-color: #0b6a0b;
+}

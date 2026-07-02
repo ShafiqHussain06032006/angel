@@ -1,0 +1,4 @@
+body { font-family: sans-serif; padding: 12px; }
+#controls { margin-bottom: 12px; }
+button { margin-right: 8px; }
+#transcript { white-space: pre-wrap; background:#f4f4f4; padding:8px; border-radius:4px; min-height:100px }

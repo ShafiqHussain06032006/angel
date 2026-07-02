@@ -1,0 +1,12 @@
+{
+  "examples": [
+    {
+      "id": "create-rest-api",
+      "prompt": "Create a REST API with user authentication, using Node.js and PostgreSQL. Include endpoints for signup, login, and profile retrieval."
+    },
+    {
+      "id": "generate-crud",
+      "prompt": "Scaffold a CRUD module for managing products with fields: name, price, description. Include validation and tests."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recorder</title>
+    <link rel="stylesheet" href="recorder.css">
+</head>
+<body>
+    <div class="recorder-container">
+        <div class="recorder-status">
+            <span id="status">Ready</span>
+        </div>
+        <div class="recorder-controls">
+            <button id="startBtn" class="btn btn-primary">Start</button>
+            <button id="stopBtn" class="btn btn-danger" disabled>Stop</button>
+        </div>
+        <div id="recordings" class="recordings-list"></div>
+    </div>
+    <script src="recorder.js"></script>
+</body>
+</html>

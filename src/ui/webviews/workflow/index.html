@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Visualization</title>
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            padding: 8px;
+            background-color: var(--vscode-sideBar-background);
+            color: var(--vscode-foreground);
+            margin: 0;
+        }
+
+        .workflow-container {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            color: var(--vscode-sideBarSectionHeader-foreground);
+            margin: 8px 0 12px 0;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px;
+            background-color: var(--vscode-input-background);
+            border-left: 3px solid var(--vscode-button-background);
+            border-radius: 2px;
+            font-size: 12px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 8px;
+            flex-shrink: 0;
+            font-size: 11px;
+        }
+
+        .step-content h3 {
+            color: var(--vscode-foreground);
+            margin: 0 0 2px 0;
+            font-size: 12px;
+        }
+
+        .step-content p {
+            color: var(--vscode-descriptionForeground);
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .step-status {
+            margin-left: auto;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: var(--vscode-input-background);
+            color: var(--vscode-descriptionForeground);
+        }
+
+        .status-running {
+            background-color: var(--vscode-notificationCenterHeader-background);
+            color: var(--vscode-notificationCenterHeader-foreground);
+        }
+
+        .status-completed {
+            background-color: var(--vscode-statusBar-debuggingBackground);
+            color: var(--vscode-statusBar-debuggingForeground);
+        }
+
+        .status-error {
+            background-color: var(--vscode-notificationsErrorIcon-foreground);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="workflow-container">
+        <h2>Workflow Visualization</h2>
+        <div class="workflow-steps" id="steps"></div>
+    </div>
+    <script>
+        // TODO: Load workflow steps and display them
+        console.log('Workflow visualization loaded');
+    </script>
+</body>
+</html>
