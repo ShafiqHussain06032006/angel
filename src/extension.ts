@@ -54,6 +54,97 @@ let audioSanitizer: AudioSanitizer;
 let currentConversationId: string | null = null;
 let currentCancellationTokenSource: vscode.CancellationTokenSource | null = null;
 
+type ProviderId = 'gemini' | 'groq' | 'anthropic' | 'openai';
+
+function createProvider(providerName: ProviderId): GeminiProvider | GroqProvider | AnthropicProvider | OpenAIProvider {
+	if (providerName === 'anthropic') {
+		return new AnthropicProvider();
+	}
+	if (providerName === 'openai') {
+		return new OpenAIProvider();
+	}
+	if (providerName === 'gemini') {
+		return new GeminiProvider();
+	}
+	return new GroqProvider();
+}
+
+async function initializeProvider(providerName: ProviderId, apiKey: string, modelName?: string): Promise<void> {
+	const provider = createProvider(providerName);
+	if (providerName === 'anthropic' && modelName) {
+		(provider as AnthropicProvider).setModel(modelName as any);
+	} else if (providerName === 'openai' && modelName) {
+		(provider as OpenAIProvider).setModel(modelName as any);
+	}
+	await provider.initialize(apiKey);
+	llmService.setProvider(provider);
+	logger.info(`LLM provider initialized: ${providerName}`);
+}
+
+function initializeCoreServices(context: vscode.ExtensionContext): string {
+	dotenv.config({ path: path.join(context.extensionPath, '.env') });
+	logger = new Logger('Angel');
+	configService = new ConfigService();
+	configService.setSecretStorage(context.secrets);
+	fileService = new FileService();
+	agentRegistry = new AgentRegistry();
+	llmService = new LLMService();
+	recordingStatus = new RecordingStatus();
+	agentPanel = new AgentPanel(context);
+
+	const wsIntel = new WorkspaceIntelligence(configService);
+	brain = new ConversationEngine(wsIntel, configService, logger);
+	tts = new TTSService();
+	localWhisper = new LocalWhisperService();
+	audioSanitizer = new AudioSanitizer();
+
+	const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+	if (workspaceRoot) {
+		conversationService = new ConversationService(workspaceRoot);
+	}
+
+	return workspaceRoot;
+}
+
+function registerWebviews(context: vscode.ExtensionContext, workspaceRoot: string): void {
+	sidebarProvider = new SidebarProvider(context, logger, llmService, (webviewView) => {
+		agentPanel.setWebviewView(webviewView);
+
+		if (conversationService && currentConversationId) {
+			const conv = conversationService.getConversation(currentConversationId);
+			if (conv && conv.messages.length > 0) {
+				agentPanel.displayConversation(conv.messages.map(m => ({
+					role: m.role,
+					content: m.content,
+					timestamp: new Date(m.timestamp).toISOString()
+				})));
+				logger.info(`Loaded ${conv.messages.length} messages from conversation ${currentConversationId}`);
+			}
+		}
+	});
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(
+			SidebarProvider.viewType,
+			sidebarProvider,
+			{ webviewOptions: { retainContextWhenHidden: true } }
+		)
+	);
+	logger.info('Sidebar provider registered');
+
+	const enhancedSidebar = new EnhancedSidebarProvider(workspaceRoot);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(EnhancedSidebarProvider.viewType, enhancedSidebar)
+	);
+	logger.info('Enhanced Sidebar provider registered');
+
+	const coverageSidebar = new CoverageSidebarProvider(workspaceRoot);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(CoverageSidebarProvider.viewType, coverageSidebar)
+	);
+	logger.info('Coverage Sidebar provider registered');
+}
+
 async function cleanupStaleAudioFiles(logger: Logger) {
 	try {
 		const tmpDir = os.tmpdir();
@@ -80,23 +171,8 @@ async function cleanupStaleAudioFiles(logger: Logger) {
 
 export async function activate(context: vscode.ExtensionContext) {
 	try {
-		// Initialize services
-		dotenv.config({ path: path.join(context.extensionPath, '.env') });
-		logger = new Logger('Angel');
-		configService = new ConfigService();
-		configService.setSecretStorage(context.secrets); // Secure API key storage
+		const workspaceRoot = initializeCoreServices(context);
 		logger.info('Angel extension activated. Use "Angel: Show Angel Output" to view logs.');
-		fileService = new FileService();
-		agentRegistry = new AgentRegistry();
-		llmService = new LLMService();
-		recordingStatus = new RecordingStatus();
-		agentPanel = new AgentPanel(context);
-		// SDLC-aware conversation engine
-		const wsIntel = new WorkspaceIntelligence(configService);
-		brain = new ConversationEngine(wsIntel, configService, logger);
-		tts = new TTSService();
-		localWhisper = new LocalWhisperService();
-		audioSanitizer = new AudioSanitizer();
 
 		logger.info('Initializing Angel extension...');
 
@@ -132,8 +208,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			logger.warn(`AudioRouter Groq init failed: ${err}`);
 		});
 
-		// Initialize ConversationService for persistence
-		const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
 		if (workspaceRoot) {
 			conversationService = new ConversationService(workspaceRoot);
 			logger.info('ConversationService initialized for persistence');
@@ -144,55 +218,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			agentPanel?.updateContextUsage(used, total);
 		});
 
-		// Register sidebar provider and connect AgentPanel when view is resolved
-		sidebarProvider = new SidebarProvider(context, logger, llmService, (webviewView) => {
-			agentPanel.setWebviewView(webviewView);
-
-			// Load existing conversation when sidebar is opened
-			if (conversationService && currentConversationId) {
-				const conv = conversationService.getConversation(currentConversationId);
-				if (conv && conv.messages.length > 0) {
-					agentPanel.displayConversation(conv.messages.map(m => ({
-						role: m.role,
-						content: m.content,
-						timestamp: new Date(m.timestamp).toISOString()
-					})));
-					logger.info(`Loaded ${conv.messages.length} messages from conversation ${currentConversationId}`);
-				}
-			}
-		});
-		context.subscriptions.push(
-			vscode.window.registerWebviewViewProvider(
-				SidebarProvider.viewType,
-				sidebarProvider,
-				{
-					// Keep the webview alive when the sidebar is hidden so that DOM/chat
-					// history is never destroyed and re-created on panel switch (Bug 1 fix).
-					webviewOptions: { retainContextWhenHidden: true }
-				}
-			)
-		);
-		logger.info('Sidebar provider registered');
-
-		// Register Enhanced Sidebar for Dashboard
-		const enhancedSidebar = new EnhancedSidebarProvider(workspaceRoot);
-		context.subscriptions.push(
-			vscode.window.registerWebviewViewProvider(
-				EnhancedSidebarProvider.viewType,
-				enhancedSidebar
-			)
-		);
-		logger.info('Enhanced Sidebar provider registered');
-
-		// Register Coverage Sidebar
-		const coverageSidebar = new CoverageSidebarProvider(workspaceRoot);
-		context.subscriptions.push(
-			vscode.window.registerWebviewViewProvider(
-				CoverageSidebarProvider.viewType,
-				coverageSidebar
-			)
-		);
-		logger.info('Coverage Sidebar provider registered');
+		registerWebviews(context, workspaceRoot);
 
 
 		// Register all agents
@@ -246,17 +272,12 @@ export async function activate(context: vscode.ExtensionContext) {
 			// If the frontend passed an API key (e.g. user just typed it), save it instantly
 			// and pre-initialize the LLM service to guarantee ensureLLMStatus passes.
 			if (apiKeyArg) {
-				const providerName = providerArg || await configService.getSelectedProvider() || 'groq';
-				await configService.storeApiKey(providerName as any, apiKeyArg);
+				const providerName = (providerArg as ProviderId) || await configService.getSelectedProvider() || 'groq';
+				await configService.storeApiKey(providerName, apiKeyArg);
 				await configService.storeSelectedProvider(providerName);
 
 				if (!llmService.isInitialized()) {
-					const provider = providerName === 'anthropic' ? new AnthropicProvider()
-						: providerName === 'openai' ? new OpenAIProvider()
-							: providerName === 'gemini' ? new GeminiProvider()
-								: new GroqProvider();
-					await provider.initialize(apiKeyArg);
-					llmService.setProvider(provider);
+					await initializeProvider(providerName, apiKeyArg);
 				}
 			}
 
@@ -531,13 +552,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		// Secret storage commands directly triggered from Webview
 		const saveApiKeyCmd = vscode.commands.registerCommand('angel.saveApiKey', async (providerName: string, apiKey: string) => {
 			await configService.storeApiKey(providerName as any, apiKey);
-			const provider = providerName === 'anthropic' ? new AnthropicProvider()
-				: providerName === 'openai' ? new OpenAIProvider()
-					: providerName === 'gemini' ? new GeminiProvider()
-						: new GroqProvider();
-			
-			await provider.initialize(apiKey);
-			llmService.setProvider(provider);
+			await initializeProvider(providerName as ProviderId, apiKey);
 			logger.info(`LLM provider re-initialized for ${providerName}`);
 		});
 
@@ -643,15 +658,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.showErrorMessage(`Angel activation failed: ${errorMsg}`);
 	}
 }
-
-function detectAndCreateProvider(apiKey: string): GeminiProvider | GroqProvider {
-	if (apiKey.startsWith('AIza')) {
-		return new GeminiProvider();
-	} else {
-		return new GroqProvider();
-	}
-}
-
 function registerAllAgents(): void {
 	// Register Planning Agent for plan mode conversations
 	const planningAgent = new PlanningAgent(logger, llmService);
@@ -704,7 +710,7 @@ async function processUserInput(
 		let input = inputArg;
 
 		// Determine provider and model (from options, then config, then defaults)
-		let providerName = options.provider || await configService.getSelectedProvider() || 'groq';
+		let providerName = (options.provider as ProviderId) || await configService.getSelectedProvider() || 'groq';
 		let modelName = options.model || await configService.getSelectedModel(providerName) || '';
 
 		// If user selected generic provider dropdown string but no concrete id:
@@ -717,7 +723,7 @@ async function processUserInput(
 
 		// Sync the key from the UI into secure storage if it was passed explicitly
 		if (apiKeyArg) {
-			await configService.storeApiKey(providerName as any, apiKeyArg);
+			await configService.storeApiKey(providerName, apiKeyArg);
 		}
 
 		// Retrieve API key from SecretStorage — only prompt if not yet stored
@@ -784,24 +790,8 @@ async function processUserInput(
 		}
 
 		// Initialize the appropriate provider based on model selection or API key detection
-		let provider;
-		if (providerName === 'anthropic') {
-			provider = new AnthropicProvider();
-			if (modelName) (provider as AnthropicProvider).setModel(modelName as any);
-			logger.info('Using Anthropic provider');
-		} else if (providerName === 'openai') {
-			provider = new OpenAIProvider();
-			if (modelName) (provider as OpenAIProvider).setModel(modelName as any);
-			logger.info('Using OpenAI provider');
-		} else if (providerName === 'groq') {
-			provider = new GroqProvider();
-			logger.info('Using Groq provider');
-		} else {
-			provider = new GeminiProvider();
-			logger.info('Using Gemini provider');
-		}
-		await provider.initialize(apiKey);
-		llmService.setProvider(provider);
+		logger.info(`Using ${providerName} provider`);
+		await initializeProvider(providerName as ProviderId, apiKey, modelName || undefined);
 		llmService.setGlobalTokenListener((token: string) => {
 			agentPanel.addToken(token);
 		});
