@@ -10,6 +10,14 @@ export type ProviderName = 'gemini' | 'groq' | 'anthropic' | 'openai';
 
 const SECRET_KEY_PREFIX = 'angel.apikey.';
 
+function getModelKey(provider: ProviderName): string {
+  return `angel_model_${provider}`;
+}
+
+function getApiKeyKey(provider: ProviderName): string {
+  return `${SECRET_KEY_PREFIX}${provider}`;
+}
+
 export class ConfigService implements IConfigService {
   private readonly configKey = 'angel';
   private secrets: vscode.SecretStorage | null = null;
@@ -30,7 +38,7 @@ export class ConfigService implements IConfigService {
    */
   async getApiKey(provider: ProviderName): Promise<string | undefined> {
     if (!this.secrets) { return undefined; }
-    return this.secrets.get(`${SECRET_KEY_PREFIX}${provider}`);
+    return this.secrets.get(getApiKeyKey(provider));
   }
 
   /**
@@ -40,7 +48,7 @@ export class ConfigService implements IConfigService {
     if (!this.secrets) {
       throw new Error('SecretStorage not initialized. Call setSecretStorage() first.');
     }
-    await this.secrets.store(`${SECRET_KEY_PREFIX}${provider}`, key);
+    await this.secrets.store(getApiKeyKey(provider), key);
   }
 
   /**
@@ -65,27 +73,27 @@ export class ConfigService implements IConfigService {
   }
 
   /** Persist the user's selected provider identifier (e.g. 'anthropic', 'openai'). */
-  async storeSelectedProvider(provider: string): Promise<void> {
+  async storeSelectedProvider(provider: ProviderName): Promise<void> {
     if (!this.secrets) { return; }
     await this.secrets.store('angel_selected_provider', provider);
   }
 
   /** Retrieve the persisted provider identifier, or undefined if not set. */
-  async getSelectedProvider(): Promise<string | undefined> {
+  async getSelectedProvider(): Promise<ProviderName | undefined> {
     if (!this.secrets) { return undefined; }
-    return this.secrets.get('angel_selected_provider');
+    return (await this.secrets.get('angel_selected_provider')) as ProviderName | undefined;
   }
 
   /** Persist the user's selected model name for a given provider. */
-  async storeSelectedModel(provider: string, model: string): Promise<void> {
+  async storeSelectedModel(provider: ProviderName, model: string): Promise<void> {
     if (!this.secrets) { return; }
-    await this.secrets.store(`angel_model_${provider}`, model);
+    await this.secrets.store(getModelKey(provider), model);
   }
 
   /** Retrieve the persisted model name for a provider, or undefined if not set. */
-  async getSelectedModel(provider: string): Promise<string | undefined> {
+  async getSelectedModel(provider: ProviderName): Promise<string | undefined> {
     if (!this.secrets) { return undefined; }
-    return this.secrets.get(`angel_model_${provider}`);
+    return this.secrets.get(getModelKey(provider));
   }
 
   // ─── Settings ────────────────────────────────────────────────────────────
